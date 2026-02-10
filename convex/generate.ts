@@ -668,10 +668,27 @@ export const executeParallaxGeneration = internalAction({
         });
 
         if (result.output) {
-          const outputUrl =
+          let outputUrl =
             typeof result.output === "string"
               ? result.output
               : result.output[0];
+
+          // For non-sky layers (index > 0), run background removal
+          // to get actual PNG transparency instead of white backgrounds
+          if (i > 0) {
+            try {
+              console.log(`[Parallax] Running background removal on layer ${i}`);
+              const bgRemover = getBGRemovalProvider();
+              const bgResult = await bgRemover.removeBackground({ imageUrl: outputUrl });
+              if (bgResult.output) {
+                outputUrl = typeof bgResult.output === "string"
+                  ? bgResult.output
+                  : bgResult.output[0];
+              }
+            } catch (bgError) {
+              console.warn(`[Parallax] Background removal failed for layer ${i}, using original:`, bgError);
+            }
+          }
 
           const layerResponse = await fetch(outputUrl);
           const layerBlob = await layerResponse.blob();
@@ -843,10 +860,25 @@ export const parallaxGeneration = action({
         });
 
         if (result.output) {
-          const outputUrl =
+          let outputUrl =
             typeof result.output === "string"
               ? result.output
               : result.output[0];
+
+          // For non-sky layers (index > 0), run background removal
+          if (i > 0) {
+            try {
+              const bgRemover = getBGRemovalProvider();
+              const bgResult = await bgRemover.removeBackground({ imageUrl: outputUrl });
+              if (bgResult.output) {
+                outputUrl = typeof bgResult.output === "string"
+                  ? bgResult.output
+                  : bgResult.output[0];
+              }
+            } catch (bgError) {
+              console.warn(`[Parallax] Background removal failed for layer ${i}, using original:`, bgError);
+            }
+          }
 
           const layerResponse = await fetch(outputUrl);
           const layerBlob = await layerResponse.blob();

@@ -97,21 +97,8 @@ export function buildParallaxPrompt(params: {
   stylePack: string;
   artStyle?: "pixel-art" | "realistic" | "cartoon" | "watercolor" | "custom";
 }): string {
-  const depthLabels = [
-    "far background sky layer, static, no movement",
-    "distant background mountains or hills layer",
-    "mid background landscape elements layer",
-    "midground trees or structures layer",
-    "near midground details layer",
-    "foreground ground and path layer",
-    "close foreground elements layer",
-    "very close foreground details layer",
-  ];
-  const depthLabel =
-    depthLabels[Math.min(params.layerIndex, depthLabels.length - 1)];
   const styleData = STYLE_PACKS.find((s) => s.id === params.stylePack);
 
-  // Map art style to descriptive text
   const artStyleDescriptions: Record<string, string> = {
     "pixel-art": "pixel art game style, retro 16-bit aesthetic",
     "realistic": "photorealistic, detailed textures, natural lighting, high definition",
@@ -122,58 +109,110 @@ export function buildParallaxPrompt(params: {
 
   const artStyleDescription = artStyleDescriptions[params.artStyle || "pixel-art"];
 
-  // Determine if this is a sky/background layer (first 2 layers) or foreground (rest)
-  const isSkyLayer = params.layerIndex < 2;
-  const isForegroundLayer = params.layerIndex >= params.totalLayers - 3;
+  // Calculate normalized depth position (0 = furthest back, 1 = closest)
+  const depthPosition = params.layerIndex / (params.totalLayers - 1);
+  const isSkyLayer = params.layerIndex === 0;
+  const isGroundLayer = params.layerIndex === params.totalLayers - 1;
 
-  const basePromptParts = [
-    params.scenePrompt,
-    depthLabel,
-    artStyleDescription,
-    "game background art",
-  ];
+  // Extract scene theme keywords for context (e.g. "desert sunset" -> desert, sunset)
+  const sceneTheme = params.scenePrompt;
 
-  // Add layer-specific optimizations
   if (isSkyLayer) {
-    // Sky/background layers: simple, clean, full coverage
-    basePromptParts.push(
-      "seamless horizontal gradient",
-      "clean flat background",
-      "simple atmospheric layer",
-      "no complex details"
-    );
-  } else if (isForegroundLayer) {
-    // Foreground layers: isolated elements, transparent backgrounds
-    basePromptParts.push(
-      "isolated elements on transparent background",
-      "no ground plane",
-      "floating in space",
-      "clean cutout style",
-      "separated objects",
-      "transparent behind elements"
-    );
-  } else {
-    // Mid-layer: balanced approach
-    basePromptParts.push(
-      "transparent areas where appropriate",
-      "layered depth"
-    );
+    // Layer 0: Sky/atmosphere ONLY - fills the entire frame
+    return [
+      `Sky and atmosphere only for a ${sceneTheme} scene`,
+      "ONLY sky, clouds, sun or moon, and atmospheric gradient",
+      "fills the entire image completely with sky",
+      "absolutely no ground, no terrain, no trees, no objects, no foreground elements",
+      "just sky from top to bottom of the image",
+      artStyleDescription,
+      "game parallax background layer",
+      "seamless horizontal tile",
+      "high quality",
+      "no characters",
+      "no text",
+    ].join(", ");
   }
 
-  // Common quality enhancements
-  basePromptParts.push(
-    "parallax game background",
-    "seamless horizontal tile",
-    "tileable left to right",
-    "seamless loop ready",
-    "clean edges",
-    "no characters",
-    "environment only",
-    "high quality",
-    "crisp details"
+  if (isGroundLayer) {
+    // Last layer: Ground/terrain at the bottom only
+    return [
+      `ISOLATED game asset: ground and terrain only for a ${sceneTheme} scene`,
+      "ground surface and path at the BOTTOM portion of the image only",
+      "the top 60% of the image must be completely plain white empty background",
+      "only terrain, ground texture, path, rocks, or small ground-level details at the bottom",
+      "absolutely no sky, no mountains, no trees, no tall objects",
+      "isolated game layer element on plain white background",
+      "like a 2D game asset cutout",
+      artStyleDescription,
+      "clean edges",
+      "no characters",
+      "no text",
+    ].join(", ");
+  }
+
+  // Middle layers: isolated elements at appropriate depth
+  const layerDescriptions = getMiddleLayerDescription(
+    params.layerIndex,
+    params.totalLayers,
+    sceneTheme
   );
 
-  return basePromptParts.filter(Boolean).join(", ");
+  return [
+    `ISOLATED game asset: ${layerDescriptions.element} for a ${sceneTheme} scene`,
+    `only ${layerDescriptions.what}, nothing else`,
+    "on a completely plain white background",
+    "the element should be isolated like a 2D game sprite or cutout",
+    `positioned in the ${layerDescriptions.position} of the image`,
+    "absolutely no full scene, no complete landscape",
+    `no ${layerDescriptions.exclude}`,
+    "isolated single layer element for parallax scrolling",
+    artStyleDescription,
+    "clean edges against white background",
+    "no characters",
+    "no text",
+  ].join(", ");
+}
+
+function getMiddleLayerDescription(
+  layerIndex: number,
+  totalLayers: number,
+  sceneTheme: string
+): { element: string; what: string; position: string; exclude: string } {
+  // Normalize index to 0-1 range excluding first and last
+  const innerIndex = layerIndex - 1;
+  const innerTotal = totalLayers - 2;
+  const normalizedDepth = innerTotal > 1 ? innerIndex / (innerTotal - 1) : 0.5;
+
+  if (normalizedDepth < 0.25) {
+    return {
+      element: "distant mountains or hills silhouettes",
+      what: "distant mountain or hill shapes",
+      position: "lower half",
+      exclude: "sky, ground, trees, foreground objects",
+    };
+  } else if (normalizedDepth < 0.5) {
+    return {
+      element: "mid-distance hills or landscape features",
+      what: "rolling hills, distant vegetation clusters, or mid-range terrain features",
+      position: "middle and lower area",
+      exclude: "sky, close foreground, ground surface",
+    };
+  } else if (normalizedDepth < 0.75) {
+    return {
+      element: "trees, bushes, or structures",
+      what: "trees, tall bushes, buildings, or vertical structures",
+      position: "center to lower portion",
+      exclude: "sky, distant mountains, ground surface",
+    };
+  } else {
+    return {
+      element: "close foreground vegetation or details",
+      what: "close plants, grass, flowers, rocks, or foreground decorations",
+      position: "lower third",
+      exclude: "sky, distant scenery, ground terrain",
+    };
+  }
 }
 
 export function buildStyleTransferPrompt(
