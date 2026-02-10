@@ -255,7 +255,7 @@ export default function ParallaxGeneratorPage() {
     }
 
     setIsBatchGenerating(true);
-    setBatchProgress(`Generating ${selectedScenes.size} scenes...`);
+    setBatchProgress(`Scheduling ${selectedScenes.size} scenes...`);
 
     try {
       // Upload file again if needed (for the batch action)
@@ -286,22 +286,10 @@ export default function ParallaxGeneratorPage() {
         artStyle: selectedStyle,
       });
 
-      // Show detailed results
-      if (batchResult.failedCount === 0) {
-        toast.success(`✓ All ${batchResult.completedCount} scenes generated successfully!`);
-      } else if (batchResult.completedCount > 0) {
-        toast.success(
-          `✓ ${batchResult.completedCount} scenes generated. ${batchResult.failedCount} failed.`,
-          { duration: 5000 }
-        );
-      } else {
-        toast.error("All scenes failed to generate. Please try again.");
-      }
-
-      // Show details of failed scenes if any
-      if (batchResult.failedScenes && batchResult.failedScenes.length > 0) {
-        console.error("Failed scenes:", batchResult.failedScenes);
-      }
+      toast.success(
+        `${batchResult.scheduledCount} scene${batchResult.scheduledCount !== 1 ? "s" : ""} generating in the background. They'll appear below as they complete.`,
+        { duration: 5000 }
+      );
 
       setBatchProgress("");
     } catch (error) {

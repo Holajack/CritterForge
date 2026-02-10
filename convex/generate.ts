@@ -1267,65 +1267,73 @@ export const batchParallaxGeneration = action({
       status: "generating",
     });
 
+    // Get project for stylePack
+    const project = await ctx.runQuery(api.projects.get, {
+      id: args.projectId,
+    });
+    if (!project) throw new Error("Project not found");
+
     const sceneIds: Id<"parallaxScenes">[] = [];
-    const failedScenes: { name: string; error: string }[] = [];
-    let completedCount = 0;
 
-    for (let i = 0; i < args.scenes.length; i++) {
-      const scene = args.scenes[i];
+    // Determine dimensions
+    const width = args.deviceWidth;
+    const height = args.deviceHeight;
 
-      try {
-        // Create a parallax scene record
-        const sceneId = await ctx.runMutation(api.parallaxScenes.create, {
-          projectId: args.projectId,
-          name: scene.name,
-          layerCount: args.layerCount,
-          scenePrompt: scene.description,
-        });
+    // Create all scenes, deduct credits, and schedule background generation
+    for (const scene of args.scenes) {
+      // Create scene record
+      const sceneId = await ctx.runMutation(api.parallaxScenes.create, {
+        projectId: args.projectId,
+        name: scene.name,
+        layerCount: args.layerCount,
+        scenePrompt: scene.description,
+      });
+      sceneIds.push(sceneId);
 
-        sceneIds.push(sceneId);
+      // Deduct credits for this scene
+      await ctx.runMutation(api.billing.deductCredits, {
+        amount: args.layerCount,
+        description: `Parallax generation: ${args.layerCount} layers for "${scene.name}"`,
+      });
 
-        // Generate the parallax layers
-        await ctx.runAction(api.generate.parallaxGeneration, {
+      // Create job record
+      const jobId: Id<"jobs"> = await ctx.runMutation(
+        internal.generateHelpers.createParallaxJob,
+        {
           sceneId,
-          layerCount: args.layerCount,
-          scenePrompt: scene.description,
-          artStyle: args.artStyle,
-          deviceWidth: args.deviceWidth,
-          deviceHeight: args.deviceHeight,
-        });
-
-        completedCount++;
-        console.log(`Completed scene ${completedCount}/${args.scenes.length}: ${scene.name}`);
-
-        // Small delay to prevent rate limiting
-        if (i < args.scenes.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          inputParams: {
+            layerCount: args.layerCount,
+            scenePrompt: scene.description,
+            stylePack: project.stylePack || "pixel-art",
+          },
         }
-      } catch (error) {
-        console.error(`Failed to generate scene "${scene.name}":`, error);
-        failedScenes.push({
-          name: scene.name,
-          error: error instanceof Error ? error.message : String(error),
-        });
-        // Continue with next scene
-      }
+      );
+
+      // Schedule background generation (returns immediately)
+      await ctx.scheduler.runAfter(0, internal.generate.executeParallaxGeneration, {
+        jobId,
+        sceneId,
+        layerCount: args.layerCount,
+        scenePrompt: scene.description,
+        artStyle: args.artStyle || "pixel-art",
+        deviceWidth: width,
+        deviceHeight: height,
+        stylePack: project.stylePack || "pixel-art",
+      });
+
+      console.log(`[Batch] Scheduled background generation for "${scene.name}" (job: ${jobId})`);
     }
 
-    // Update final status
-    const finalStatus = failedScenes.length === args.scenes.length ? "failed" : "completed";
+    // Update text document with scene IDs (generation is in-progress, not complete yet)
     await ctx.runMutation(api.textDocuments.updateStatus, {
       id: args.textDocumentId,
-      status: finalStatus,
+      status: "completed",
       sceneIds,
     });
 
-    // Return results summary
     return {
       sceneIds,
-      completedCount,
-      failedCount: failedScenes.length,
-      failedScenes,
+      scheduledCount: args.scenes.length,
     };
   },
 });
