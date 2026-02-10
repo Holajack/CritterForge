@@ -9,9 +9,10 @@ import { FolderOpen } from "lucide-react";
 interface ProjectGridProps {
   projects: any[] | undefined;
   onCreateNew: () => void;
+  limit?: number;
 }
 
-export function ProjectGrid({ projects, onCreateNew }: ProjectGridProps) {
+export function ProjectGrid({ projects, onCreateNew, limit }: ProjectGridProps) {
   if (projects === undefined) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -38,6 +39,8 @@ export function ProjectGrid({ projects, onCreateNew }: ProjectGridProps) {
     );
   }
 
+  const displayedProjects = limit ? projects.slice(0, limit) : projects;
+
   return (
     <motion.div
       initial="hidden"
@@ -45,7 +48,7 @@ export function ProjectGrid({ projects, onCreateNew }: ProjectGridProps) {
       transition={{ staggerChildren: 0.06 }}
       className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
-      {projects.map((project) => (
+      {displayedProjects.map((project) => (
         <motion.div
           key={project._id}
           variants={{

@@ -36,7 +36,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     <aside className="flex w-56 shrink-0 flex-col border-r border-border/40 bg-card/30 h-full">
       <div className="p-3">
         <Link
-          href="/dashboard"
+          href="/dashboard/projects"
           onClick={onNavigate}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >

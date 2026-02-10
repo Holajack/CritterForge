@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Projects", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/gallery", label: "Gallery", icon: Image },
 ];
 
