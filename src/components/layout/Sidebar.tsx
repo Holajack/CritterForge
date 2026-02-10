@@ -9,6 +9,7 @@ import {
   Layers,
   Sparkles,
   FileDown,
+  Settings,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -28,10 +29,11 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     { href: basePath, label: "Parallax Scenes", icon: Layers, exact: true },
     { href: `${basePath}/parallax`, label: "New Scene", icon: Sparkles },
     { href: `${basePath}/export`, label: "Export", icon: FileDown },
+    { href: `${basePath}/settings`, label: "Settings", icon: Settings },
   ];
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-border/40 bg-card/30">
+    <aside className="flex w-56 shrink-0 flex-col border-r border-border/40 bg-card/30 h-full">
       <div className="p-3">
         <Link
           href="/dashboard"

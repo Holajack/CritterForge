@@ -14,6 +14,7 @@ import { ArrowLeft, Layers, Download, Sparkles, Loader2, Trash2, CheckSquare, Sq
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ParallaxDownloadDialog } from "@/components/parallax/ParallaxDownloadDialog";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -26,6 +27,11 @@ export default function ProjectDetailPage() {
 
   const [scenesToDelete, setScenesToDelete] = useState<Set<Id<"parallaxScenes">>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [selectedSceneForDownload, setSelectedSceneForDownload] = useState<{
+    id: Id<"parallaxScenes">;
+    name: string;
+  } | null>(null);
 
   if (project === undefined || scenes === undefined) {
     return (
@@ -243,7 +249,18 @@ export default function ProjectDetailPage() {
                       {scene.status}
                     </Badge>
                     {scene.status === "completed" && (
-                      <Button variant="ghost" size="sm" className="ml-auto">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-auto"
+                        onClick={() => {
+                          setSelectedSceneForDownload({
+                            id: scene._id,
+                            name: scene.name,
+                          });
+                          setDownloadDialogOpen(true);
+                        }}
+                      >
                         <Download className="h-4 w-4" />
                       </Button>
                     )}
@@ -254,6 +271,14 @@ export default function ProjectDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Download Dialog */}
+      <ParallaxDownloadDialog
+        sceneId={selectedSceneForDownload?.id || null}
+        sceneName={selectedSceneForDownload?.name || ""}
+        open={downloadDialogOpen}
+        onOpenChange={setDownloadDialogOpen}
+      />
     </div>
   );
 }

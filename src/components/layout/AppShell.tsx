@@ -23,10 +23,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         showMenuButton={hasProject}
         onMenuClick={() => setSidebarOpen(true)}
       />
-      <div className="flex flex-1">
-        {/* Desktop sidebar */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop sidebar - fixed */}
         {hasProject && (
-          <div className="hidden md:block">
+          <div className="hidden md:block h-[calc(100vh-3.5rem)] sticky top-14 overflow-y-auto">
             <Sidebar />
           </div>
         )}
@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Sheet>
         )}
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto h-[calc(100vh-3.5rem)] p-4 md:p-6">{children}</main>
       </div>
     </div>
   );
