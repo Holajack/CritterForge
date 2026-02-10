@@ -371,10 +371,14 @@ export const internalUpdateStatus = internalMutation({
     id: v.id("parallaxScenes"),
     status: v.string(),
     jobId: v.optional(v.id("jobs")),
+    error: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const updates: Record<string, unknown> = { status: args.status };
     if (args.jobId !== undefined) updates.jobId = args.jobId;
+    if (args.error !== undefined) updates.error = args.error;
+    // Clear error when retrying (status goes back to processing)
+    if (args.status === "processing") updates.error = undefined;
     await ctx.db.patch(args.id, updates);
   },
 });

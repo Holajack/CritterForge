@@ -12,6 +12,7 @@ import type * as animations from "../animations.js";
 import type * as billing from "../billing.js";
 import type * as characters from "../characters.js";
 import type * as compositePreview from "../compositePreview.js";
+import type * as dashboard from "../dashboard.js";
 import type * as exports from "../exports.js";
 import type * as frames from "../frames.js";
 import type * as gallery from "../gallery.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   billing: typeof billing;
   characters: typeof characters;
   compositePreview: typeof compositePreview;
+  dashboard: typeof dashboard;
   exports: typeof exports;
   frames: typeof frames;
   gallery: typeof gallery;

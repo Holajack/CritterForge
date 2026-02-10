@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { ArrowLeft, Layers, Download, Sparkles, Loader2, Trash2, CheckSquare, Square } from "lucide-react";
+import { ArrowLeft, Layers, Download, Sparkles, Loader2, Trash2, CheckSquare, Square, AlertCircle, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -25,8 +25,10 @@ export default function ProjectDetailPage() {
   const project = useQuery(api.projects.get, { id: projectId });
   const scenes = useQuery(api.parallaxScenes.listByProjectWithPreviews, { projectId });
   const deleteScene = useMutation(api.parallaxScenes.deleteScene);
+  const retryScene = useAction(api.generate.retryScene);
 
   const [scenesToDelete, setScenesToDelete] = useState<Set<Id<"parallaxScenes">>>(new Set());
+  const [retryingScenes, setRetryingScenes] = useState<Set<Id<"parallaxScenes">>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [selectedSceneForDownload, setSelectedSceneForDownload] = useState<{
@@ -235,7 +237,10 @@ export default function ProjectDetailPage() {
                     </Button>
                   </div>
 
-                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className={cn(
+                    "aspect-video rounded-lg flex items-center justify-center overflow-hidden",
+                    scene.status === "failed" ? "bg-red-500/10" : "bg-muted"
+                  )}>
                     {scene.status === "completed" && scene.previewUrl ? (
                       <img
                         src={scene.previewUrl}
@@ -246,6 +251,14 @@ export default function ProjectDetailPage() {
                       <div className="flex flex-col items-center gap-1">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                         <span className="text-xs text-muted-foreground">Generating...</span>
+                      </div>
+                    ) : scene.status === "failed" ? (
+                      <div className="flex flex-col items-center gap-2 p-3 text-center">
+                        <AlertCircle className="h-8 w-8 text-red-500" />
+                        <span className="text-xs text-red-500 font-medium">Generation Failed</span>
+                        {scene.error && (
+                          <p className="text-xs text-red-400/80 line-clamp-2">{scene.error}</p>
+                        )}
                       </div>
                     ) : (
                       <Layers className="h-12 w-12 text-muted-foreground" />
@@ -261,7 +274,11 @@ export default function ProjectDetailPage() {
 
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant={scene.status === "completed" ? "default" : "secondary"}
+                      variant={
+                        scene.status === "completed" ? "default"
+                        : scene.status === "failed" ? "destructive"
+                        : "secondary"
+                      }
                       className="text-xs"
                     >
                       {scene.status}
@@ -280,6 +297,37 @@ export default function ProjectDetailPage() {
                         }}
                       >
                         <Download className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {scene.status === "failed" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto gap-1.5 text-xs"
+                        disabled={retryingScenes.has(scene._id)}
+                        onClick={async () => {
+                          setRetryingScenes((prev) => new Set(prev).add(scene._id));
+                          try {
+                            await retryScene({ sceneId: scene._id });
+                            toast.success(`Retrying "${scene.name}"...`);
+                          } catch (error) {
+                            console.error("Retry error:", error);
+                            toast.error("Failed to retry. Check your credits.");
+                          } finally {
+                            setRetryingScenes((prev) => {
+                              const next = new Set(prev);
+                              next.delete(scene._id);
+                              return next;
+                            });
+                          }
+                        }}
+                      >
+                        {retryingScenes.has(scene._id) ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <RotateCw className="h-3.5 w-3.5" />
+                        )}
+                        Retry
                       </Button>
                     )}
                   </div>

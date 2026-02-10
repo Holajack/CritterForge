@@ -616,6 +616,70 @@ export const startParallaxGeneration = action({
   },
 });
 
+// ── Retry a failed scene ──
+
+export const retryScene = action({
+  args: {
+    sceneId: v.id("parallaxScenes"),
+  },
+  handler: async (ctx, args): Promise<{ jobId: string }> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const scene = await ctx.runQuery(api.parallaxScenes.get, {
+      id: args.sceneId,
+    });
+    if (!scene) throw new Error("Scene not found");
+    if (scene.status !== "failed" && scene.status !== "cancelled") {
+      throw new Error("Can only retry failed or cancelled scenes");
+    }
+
+    const project = await ctx.runQuery(api.projects.get, {
+      id: scene.projectId,
+    });
+    if (!project) throw new Error("Project not found");
+
+    // Deduct credits again for retry
+    await ctx.runMutation(api.billing.deductCredits, {
+      amount: scene.layerCount,
+      description: `Retry parallax generation: ${scene.layerCount} layers`,
+    });
+
+    const jobId: Id<"jobs"> = await ctx.runMutation(
+      internal.generateHelpers.createParallaxJob,
+      {
+        sceneId: args.sceneId,
+        inputParams: {
+          layerCount: scene.layerCount,
+          scenePrompt: scene.scenePrompt || "",
+          stylePack: project.stylePack || "pixel-art",
+        },
+      }
+    );
+
+    // Reset scene status and save new jobId
+    await ctx.runMutation(internal.parallaxScenes.internalUpdateStatus, {
+      id: args.sceneId,
+      status: "processing",
+      jobId,
+    });
+
+    // Schedule background generation
+    await ctx.scheduler.runAfter(0, internal.generate.executeParallaxGeneration, {
+      jobId,
+      sceneId: args.sceneId,
+      layerCount: scene.layerCount,
+      scenePrompt: scene.scenePrompt || "",
+      artStyle: "pixel-art",
+      deviceWidth: scene.deviceWidth || 1080,
+      deviceHeight: scene.deviceHeight || 1920,
+      stylePack: project.stylePack || "pixel-art",
+    });
+
+    return { jobId };
+  },
+});
+
 // ── Background parallax generation worker ──
 
 export const executeParallaxGeneration = internalAction({
@@ -770,10 +834,11 @@ export const executeParallaxGeneration = internalAction({
         error: errorMessage,
       });
 
-      // Mark scene as failed so the UI reflects it
+      // Mark scene as failed with error so the UI shows why
       await ctx.runMutation(internal.parallaxScenes.internalUpdateStatus, {
         id: args.sceneId,
         status: "failed",
+        error: errorMessage,
       });
 
       try {

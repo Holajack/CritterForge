@@ -35,6 +35,7 @@ import {
   CheckSquare,
   Square,
   Trash2,
+  AlertCircle,
 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -83,6 +84,7 @@ export default function ParallaxGeneratorPage() {
   // Scene management state
   const [scenesToDelete, setScenesToDelete] = useState<Set<Id<"parallaxScenes">>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+  const [retryingScenes, setRetryingScenes] = useState<Set<Id<"parallaxScenes">>>(new Set());
 
   // Download dialog state
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
@@ -111,6 +113,7 @@ export default function ParallaxGeneratorPage() {
   const batchParallaxGeneration = useAction(api.generate.batchParallaxGeneration);
   const deleteScene = useMutation(api.parallaxScenes.deleteScene);
   const deleteAllScenes = useMutation(api.parallaxScenes.deleteAllByProject);
+  const retrySceneAction = useAction(api.generate.retryScene);
 
   // Get current device dimensions
   const currentDevice = DEVICE_PRESETS.find((d) => d.id === selectedDevice);
@@ -1100,13 +1103,18 @@ export default function ParallaxGeneratorPage() {
                   </button>
 
                   {/* Preview thumbnail */}
-                  <div className="h-10 w-16 rounded bg-muted/80 flex items-center justify-center overflow-hidden shrink-0">
+                  <div className={cn(
+                    "h-10 w-16 rounded flex items-center justify-center overflow-hidden shrink-0",
+                    scene.status === "failed" ? "bg-red-500/10" : "bg-muted/80"
+                  )}>
                     {scene.previewUrl ? (
                       <img
                         src={scene.previewUrl}
                         alt={scene.name}
                         className="w-full h-full object-cover rounded"
                       />
+                    ) : scene.status === "failed" ? (
+                      <AlertCircle className="h-4 w-4 text-red-500" />
                     ) : scene.status === "pending" || scene.status === "processing" ? (
                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                     ) : (
@@ -1120,10 +1128,44 @@ export default function ParallaxGeneratorPage() {
                       {scene.status === "processing" && " · Generating..."}
                       {scene.status === "pending" && " · Queued"}
                       {scene.status === "completed" && " · Complete"}
-                      {scene.status === "failed" && " · Failed"}
+                      {scene.status === "failed" && (
+                        <span className="text-red-500"> · Failed</span>
+                      )}
                     </div>
+                    {scene.status === "failed" && scene.error && (
+                      <div className="flex items-start gap-1.5 mt-1 p-1.5 rounded bg-red-500/10 border border-red-500/20">
+                        <AlertCircle className="h-3 w-3 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-red-400 line-clamp-2">{scene.error}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    {scene.status === "failed" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-orange-500 hover:text-orange-400"
+                        disabled={retryingScenes.has(scene._id)}
+                        onClick={async () => {
+                          setRetryingScenes((prev) => new Set(prev).add(scene._id));
+                          try {
+                            await retrySceneAction({ sceneId: scene._id });
+                            toast.success(`Retrying "${scene.name}"...`);
+                          } catch (error) {
+                            console.error("Retry error:", error);
+                            toast.error(error instanceof Error ? error.message : "Failed to retry scene");
+                          } finally {
+                            setRetryingScenes((prev) => {
+                              const next = new Set(prev);
+                              next.delete(scene._id);
+                              return next;
+                            });
+                          }
+                        }}
+                      >
+                        <RotateCw className={cn("h-4 w-4", retryingScenes.has(scene._id) && "animate-spin")} />
+                      </Button>
+                    )}
                     {scene.status === "completed" && (
                       <Button
                         variant="ghost"
