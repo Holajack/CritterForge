@@ -593,6 +593,13 @@ export const startParallaxGeneration = action({
       }
     );
 
+    // Save jobId on scene and mark as processing so it persists across navigation
+    await ctx.runMutation(internal.parallaxScenes.internalUpdateStatus, {
+      id: args.sceneId,
+      status: "processing",
+      jobId,
+    });
+
     // Schedule the actual generation in the background - returns immediately
     await ctx.scheduler.runAfter(0, internal.generate.executeParallaxGeneration, {
       jobId,
@@ -761,6 +768,12 @@ export const executeParallaxGeneration = internalAction({
       await ctx.runMutation(internal.generateHelpers.failJob, {
         jobId: args.jobId,
         error: errorMessage,
+      });
+
+      // Mark scene as failed so the UI reflects it
+      await ctx.runMutation(internal.parallaxScenes.internalUpdateStatus, {
+        id: args.sceneId,
+        status: "failed",
       });
 
       try {
@@ -1340,6 +1353,13 @@ export const batchParallaxGeneration = action({
           },
         }
       );
+
+      // Save jobId on scene and mark as processing
+      await ctx.runMutation(internal.parallaxScenes.internalUpdateStatus, {
+        id: sceneId,
+        status: "processing",
+        jobId,
+      });
 
       // Schedule background generation (returns immediately)
       await ctx.scheduler.runAfter(0, internal.generate.executeParallaxGeneration, {

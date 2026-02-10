@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ParallaxDownloadDialog } from "@/components/parallax/ParallaxDownloadDialog";
+import { GenerationProgress } from "@/components/parallax/GenerationProgress";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -152,6 +153,23 @@ export default function ProjectDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Show progress for any in-progress scenes */}
+        {scenes.filter((s) => (s.status === "pending" || s.status === "processing") && s.jobId).length > 0 && (
+          <div className="space-y-3 mb-4">
+            {scenes
+              .filter((s) => (s.status === "pending" || s.status === "processing") && s.jobId)
+              .map((scene) => (
+                <div key={`progress-${scene._id}`}>
+                  <p className="text-xs text-muted-foreground mb-1 font-medium">{scene.name}</p>
+                  <GenerationProgress
+                    jobId={scene.jobId!}
+                    layerCount={scene.layerCount}
+                  />
+                </div>
+              ))}
+          </div>
+        )}
 
         {scenes.length === 0 ? (
           <EmptyState

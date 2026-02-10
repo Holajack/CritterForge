@@ -182,6 +182,7 @@ export default defineSchema({
     layers: v.optional(v.any()),
     previewId: v.optional(v.id("_storage")),
     status: v.string(),
+    jobId: v.optional(v.id("jobs")),
     // New fields for device configuration and modes
     deviceWidth: v.optional(v.number()),
     deviceHeight: v.optional(v.number()),

@@ -366,6 +366,19 @@ export const internalUpdatePreview = internalMutation({
   },
 });
 
+export const internalUpdateStatus = internalMutation({
+  args: {
+    id: v.id("parallaxScenes"),
+    status: v.string(),
+    jobId: v.optional(v.id("jobs")),
+  },
+  handler: async (ctx, args) => {
+    const updates: Record<string, unknown> = { status: args.status };
+    if (args.jobId !== undefined) updates.jobId = args.jobId;
+    await ctx.db.patch(args.id, updates);
+  },
+});
+
 export const listByProjectWithPreviews = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {

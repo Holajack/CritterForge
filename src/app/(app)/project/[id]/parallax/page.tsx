@@ -933,36 +933,67 @@ export default function ParallaxGeneratorPage() {
         </div>
       </div>
 
-      {/* Generation Progress */}
-      {activeJobId && (
-        <div className="mt-6">
-          <GenerationProgress
-            jobId={activeJobId}
-            layerCount={layerCount}
-            onComplete={() => {
-              toast.success("Parallax scene generated successfully!");
-              setActiveJobId(null);
-              setIsGenerating(false);
-            }}
-            onError={(error) => {
-              toast.error(`Generation failed: ${error}`);
-              setActiveJobId(null);
-              setIsGenerating(false);
-            }}
-            onCancel={() => {
-              toast("Generation cancelled. Credits refunded.");
-              setActiveJobId(null);
-              setIsGenerating(false);
-            }}
-            onRetry={() => {
-              setActiveJobId(null);
-              setIsGenerating(false);
-              // Re-trigger generation with same settings
-              handleGenerate();
-            }}
-          />
-        </div>
-      )}
+      {/* Generation Progress - shows for current session AND recovered in-progress scenes */}
+      {(() => {
+        // Collect all active jobIds: the current session's job + any in-progress scenes from the DB
+        const activeScenes = (scenes || []).filter(
+          (s) => (s.status === "pending" || s.status === "processing") && s.jobId
+        );
+        const allActiveJobIds = new Set<string>();
+        if (activeJobId) allActiveJobIds.add(activeJobId);
+        for (const s of activeScenes) {
+          if (s.jobId) allActiveJobIds.add(s.jobId);
+        }
+
+        if (allActiveJobIds.size === 0) return null;
+
+        return (
+          <div className="mt-6 space-y-3">
+            {Array.from(allActiveJobIds).map((jId) => {
+              const matchingScene = activeScenes.find((s) => s.jobId === jId);
+              const jLayerCount = matchingScene?.layerCount || layerCount;
+              const sceneName = matchingScene?.name;
+              return (
+                <div key={jId}>
+                  {sceneName && allActiveJobIds.size > 1 && (
+                    <p className="text-xs text-muted-foreground mb-1 font-medium">{sceneName}</p>
+                  )}
+                  <GenerationProgress
+                    jobId={jId as Id<"jobs">}
+                    layerCount={jLayerCount}
+                    onComplete={() => {
+                      if (jId === activeJobId) {
+                        toast.success("Parallax scene generated successfully!");
+                        setActiveJobId(null);
+                        setIsGenerating(false);
+                      }
+                    }}
+                    onError={(error) => {
+                      if (jId === activeJobId) {
+                        toast.error(`Generation failed: ${error}`);
+                        setActiveJobId(null);
+                        setIsGenerating(false);
+                      }
+                    }}
+                    onCancel={() => {
+                      if (jId === activeJobId) {
+                        toast("Generation cancelled. Credits refunded.");
+                        setActiveJobId(null);
+                        setIsGenerating(false);
+                      }
+                    }}
+                    onRetry={jId === activeJobId ? () => {
+                      setActiveJobId(null);
+                      setIsGenerating(false);
+                      handleGenerate();
+                    } : undefined}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Existing Scenes - Full Width */}
       {scenes && scenes.length > 0 && (
