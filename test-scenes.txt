@@ -1,0 +1,29 @@
+SCENE: Desert Focus - Walking
+Pixel art desert landscape with intense orange-gold sunset sky. Distant red-orange rock mesas and buttes on the horizon. Large saguaro cacti with arms and barrel cacti in the midground. Sandy desert ground with a worn trail, cracked earth texture, small stones and desert pebbles. Hot desert sun low on horizon with heat shimmer. American Southwest desert palette with reds, oranges, tans, and sienna tones. Retro 16-bit game style.
+
+SCENE: Beach Focus - Walking
+Pixel art tropical beach with bright blue sky transitioning to warm orange-pink sunset. Calm turquoise-blue ocean stretching to the horizon with gentle wave ripples catching sunlight. Palm tree silhouettes with curved trunks and fan-shaped fronds, coconuts visible. Golden-tan sandy beach path with gentle wave foam, small seashells and pebbles scattered on the sand. Tropical warm saturated colors, retro 16-bit game style.
+
+SCENE: Jungle Focus - Walking
+Pixel art dense tropical jungle with patches of blue sky visible through gaps in canopy. Massive tropical trees with thick trunks, hanging vines and lianas. Large tropical fern fronds and broad-leaf plants with exotic flowers in red, orange, and purple. Dark rich soil jungle floor path with exposed tree roots, small mushrooms, fallen leaves, and dappled sunlight spots. Lush green and golden light palette, misty atmosphere.
+
+SCENE: Forest Rest - Sleeping
+Pixel art twilight forest clearing at dusk. Deep blue-purple sky with early stars and crescent moon, soft pink-orange glow on horizon. Silhouettes of pine trees with fireflies (small yellow-green glowing dots) scattered throughout. Soft grassy clearing with patches of clover, small flowers, and moss-covered areas. Peaceful, calm, completely still atmosphere for a resting scene. Cool twilight palette with deep blues, purples, and silhouette greens.
+
+SCENE: Beach Rest - Sleeping
+Pixel art tropical beach at night. Deep navy blue sky filled with bright stars and large crescent moon reflecting on calm dark water. Bioluminescent blue sparkles in the water near shore. Dark palm tree silhouettes against moonlit sky with a small hammock tied between trees. Cool blue-tinted sand in moonlight with smooth sand, seashells, and driftwood forming a natural windbreak. Serene nighttime ocean palette.
+
+SCENE: Desert Rest - Sleeping
+Pixel art desert night sky with incredible star-filled clarity. Bright Milky Way band stretching across deep indigo sky, shooting stars as thin white streaks. Mesa silhouettes against starry sky in deep purple-blue tones with cool blue moonlight. Saguaro cactus silhouettes with a blooming night cactus flower and an owl perched on one arm. Sandy desert ground in cool gray-tan moonlit tones with a sheltered spot against a rock formation. Spectacular stargazing atmosphere.
+
+SCENE: Jungle Rest - Sleeping
+Pixel art jungle night scene with dark canopy and soft moonbeams filtering through leaves. Dense dark jungle with massive tree trunks and bioluminescent mushrooms glowing blue-green on bark. Glowing orchids in soft pink-purple, hanging vines with tiny glowing insects. Soft bed of fallen leaves and moss in a small clearing with bioluminescent mushroom ring providing soft blue-green light. Large tree root creating natural shelter. Mysterious but peaceful magical atmosphere.
+
+SCENE: Bear Cave Home
+Pixel art cozy bear cave entrance with rocky cave mouth, smooth worn stones. Warm orange glow emanating from inside suggesting cozy interior. Soft moss growing around entrance, bear scratch marks on rock. Small pile of leaves and soft bedding visible just inside. Welcoming hibernation den feel, retro 16-bit style.
+
+SCENE: Fox Den Home
+Pixel art cozy fox den entrance beneath roots of a large tree. Underground burrow with sandy mound around entrance hole, worn path leading to den. Warm orange glow from inside. Small collection of found treasures near entrance - a shiny pebble, a feather. Tall grass and wildflowers around the entrance. Clever and snug hidden home feel.
+
+SCENE: Nora's Doggy Home
+Pixel art cozy dog house for a golden-colored dog named Nora. Warm wooden dog house with peaked roof in honey-brown wood tones. "NORA" carved above arched entrance with small heart. Soft plush cushion inside with warm orange glow. Small welcome mat, favorite squeaky toy and tennis ball nearby. Purple and gold accents. Food bowl and water bowl positioned to the right. Well-loved and cozy, retro 16-bit style.
