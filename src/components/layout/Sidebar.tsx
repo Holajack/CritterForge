@@ -11,7 +11,11 @@ import {
   FileDown,
 } from "lucide-react";
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const params = useParams();
   const projectId = params?.id as string | undefined;
@@ -31,6 +35,7 @@ export function Sidebar() {
       <div className="p-3">
         <Link
           href="/dashboard"
+          onClick={onNavigate}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -49,6 +54,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive

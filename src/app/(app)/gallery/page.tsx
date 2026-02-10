@@ -6,12 +6,12 @@ import { Sparkles, Users, Heart, Share2 } from "lucide-react";
 
 export default function GalleryPage() {
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4">
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+    <div className="container max-w-5xl mx-auto py-4 md:py-8 px-3 md:px-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 px-2">
         {/* Icon */}
         <div className="relative">
-          <div className="bg-moss/10 p-8 rounded-2xl">
-            <Users className="h-16 w-16 text-moss" />
+          <div className="bg-moss/10 p-6 md:p-8 rounded-2xl">
+            <Users className="h-12 w-12 md:h-16 md:w-16 text-moss" />
           </div>
           <div className="absolute -top-2 -right-2 bg-ember/10 p-2 rounded-full animate-bounce">
             <Sparkles className="h-6 w-6 text-ember" />
@@ -20,7 +20,7 @@ export default function GalleryPage() {
 
         {/* Title */}
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold">Community Gallery</h1>
+          <h1 className="text-2xl md:text-4xl font-bold">Community Gallery</h1>
           <p className="text-muted-foreground text-lg max-w-xl">
             Coming in Phase 3
           </p>

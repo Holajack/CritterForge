@@ -380,7 +380,7 @@ export default function ParallaxGeneratorPage() {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4">
+    <div className="container max-w-5xl mx-auto py-4 md:py-8 px-2 md:px-4">
       <Button
         variant="ghost"
         onClick={() => router.push(`/project/${projectId}`)}
@@ -391,12 +391,12 @@ export default function ParallaxGeneratorPage() {
         Back to Project
       </Button>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-sky/10 p-3 rounded-xl">
-          <Layers className="h-8 w-8 text-sky" />
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
+        <div className="bg-sky/10 p-2.5 md:p-3 rounded-xl">
+          <Layers className="h-6 w-6 md:h-8 md:w-8 text-sky" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Parallax Scene Generator</h1>
+          <h1 className="text-xl md:text-2xl font-bold">Parallax Scene Generator</h1>
           <p className="text-sm text-muted-foreground">
             Create layered backgrounds with depth and motion
           </p>
@@ -414,17 +414,17 @@ export default function ParallaxGeneratorPage() {
             <CardContent className="pt-0">
               <Tabs value={mode} onValueChange={(v) => setMode(v as GenerationMode)}>
                 <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="text-file" className="gap-2">
+                  <TabsTrigger value="text-file" className="gap-1.5 text-xs md:text-sm">
                     <FileText className="h-4 w-4" />
-                    Text File
+                    <span className="hidden sm:inline">Text File</span>
                   </TabsTrigger>
-                  <TabsTrigger value="text-to-layers" className="gap-2">
+                  <TabsTrigger value="text-to-layers" className="gap-1.5 text-xs md:text-sm">
                     <Type className="h-4 w-4" />
-                    Single Scene
+                    <span className="hidden sm:inline">Single Scene</span>
                   </TabsTrigger>
-                  <TabsTrigger value="upload-split" className="gap-2">
+                  <TabsTrigger value="upload-split" className="gap-1.5 text-xs md:text-sm">
                     <Upload className="h-4 w-4" />
-                    Upload & Split
+                    <span className="hidden sm:inline">Upload & Split</span>
                   </TabsTrigger>
                 </TabsList>
 

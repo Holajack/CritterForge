@@ -37,8 +37,8 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="pixel-grid absolute inset-0" />
-      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-20 md:pb-32 md:pt-28">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
+      <div className="relative mx-auto max-w-6xl px-4 md:px-6 pb-16 pt-12 md:pb-32 md:pt-28">
+        <div className="grid items-center gap-10 md:gap-16 lg:grid-cols-2">
           {/* Left: Copy */}
           <motion.div
             initial="hidden"
@@ -57,7 +57,7 @@ export function Hero() {
             <motion.h1
               variants={fadeUp}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl"
+              className="text-3xl font-bold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
             >
               One text file.{" "}
               <span className="text-primary">Every parallax scene</span>{" "}
@@ -67,7 +67,7 @@ export function Hero() {
             <motion.p
               variants={fadeUp}
               transition={{ duration: 0.5 }}
-              className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground"
+              className="mt-4 md:mt-6 max-w-lg text-base md:text-lg leading-relaxed text-muted-foreground"
             >
               Upload a script, story, or scene list. ParallaxForge uses AI to parse your
               content and generate multi-layered parallax backgrounds &mdash; ready to drop
@@ -77,7 +77,7 @@ export function Hero() {
             <motion.div
               variants={fadeUp}
               transition={{ duration: 0.5 }}
-              className="mt-10 flex flex-wrap items-center gap-4"
+              className="mt-8 md:mt-10 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 md:gap-4"
             >
               <Link href="/sign-up">
                 <Button size="lg" className="gap-2 px-8">
@@ -95,7 +95,7 @@ export function Hero() {
             <motion.div
               variants={fadeUp}
               transition={{ duration: 0.5 }}
-              className="mt-10 flex items-center gap-6 text-sm text-muted-foreground"
+              className="mt-6 md:mt-10 flex flex-wrap items-center gap-4 md:gap-6 text-xs md:text-sm text-muted-foreground"
             >
               <span className="flex items-center gap-1.5">
                 <span className="h-1 w-1 rounded-full bg-moss" />
@@ -194,7 +194,7 @@ export function Hero() {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="absolute -bottom-6 -left-6 rounded-xl border border-border/60 bg-card p-4 shadow-lg"
+              className="hidden sm:block absolute -bottom-6 -left-6 rounded-xl border border-border/60 bg-card p-4 shadow-lg"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10">

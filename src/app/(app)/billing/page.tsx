@@ -18,12 +18,12 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8">
+    <div className="container max-w-6xl mx-auto py-4 md:py-8 px-3 md:px-4 space-y-6 md:space-y-8">
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <Coins className="h-7 w-7 text-ember" />
-          <h1 className="text-3xl font-bold">Credits & Billing</h1>
+          <Coins className="h-6 w-6 md:h-7 md:w-7 text-ember" />
+          <h1 className="text-2xl md:text-3xl font-bold">Credits & Billing</h1>
         </div>
         <p className="text-muted-foreground">Purchase credits to generate animations</p>
       </div>

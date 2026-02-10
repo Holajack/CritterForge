@@ -53,7 +53,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl py-8 px-4 space-y-8">
+    <div className="container mx-auto max-w-6xl py-4 md:py-8 px-2 md:px-4 space-y-6 md:space-y-8">
       <Button variant="ghost" onClick={() => router.push("/dashboard")} size="sm">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Projects
@@ -61,9 +61,9 @@ export default function ProjectDetailPage() {
 
       {/* Project Header */}
       <div>
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">{project.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1 md:mb-2">{project.name}</h1>
             {project.description && (
               <p className="text-muted-foreground">{project.description}</p>
             )}

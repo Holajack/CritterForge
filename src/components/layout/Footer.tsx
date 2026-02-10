@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-card/50">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-12 md:grid-cols-5">
-          <div className="md:col-span-2">
+      <div className="mx-auto max-w-6xl px-4 md:px-6 py-10 md:py-16">
+        <div className="grid gap-8 md:gap-12 grid-cols-2 md:grid-cols-5">
+          <div className="col-span-2">
             <Link href="/" className="mb-4 flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Flame className="h-4.5 w-4.5 text-primary-foreground" />
@@ -28,7 +28,7 @@ export function Footer() {
                 <Input
                   type="email"
                   placeholder="you@example.com"
-                  className="h-9 max-w-[220px] text-sm"
+                  className="h-9 w-full sm:max-w-[220px] text-sm"
                 />
                 <Button size="sm" variant="outline">
                   Subscribe
